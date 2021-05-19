@@ -1,0 +1,7 @@
+---
+# tasks file for test
+- name: test connection
+  ping:
+  remote_user: "{{ distant_source_user }}"
+- debug:
+    msg: "{{ ansible_hostname }}:{{ ansible_default_ipv4.address }}"
