@@ -33,7 +33,7 @@
 - name: Compress Directory files
   become: yes
   archive:
-    path: "{{ ovh_drupal_core_path }}/sites/00_algol_websites/files/c02"
+    path: "{{ distant_source_drupal_core_path }}/sites/00_algol_websites/files/c02"
     dest: "{{ retrieve_path }}/files/c02_files.gz"
     format: gz
 
