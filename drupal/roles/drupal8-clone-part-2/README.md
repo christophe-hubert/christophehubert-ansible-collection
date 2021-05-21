@@ -1,7 +1,11 @@
 Role Name
 =========
 
-A brief description of the role goes here.
+Clone Drupal8 part2 :
+retrieve ressources from source website
+- settings.local.php
+- .htaccess
+- robots.txt
 
 Requirements
 ------------

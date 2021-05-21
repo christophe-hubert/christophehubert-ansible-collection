@@ -1,0 +1,8 @@
+- name: git clone
+  import_tasks: git_clone.yml
+
+- name: filesystem
+  import_tasks: filesystem.yml
+
+- name: create db
+  import_tasks: create_db.yml

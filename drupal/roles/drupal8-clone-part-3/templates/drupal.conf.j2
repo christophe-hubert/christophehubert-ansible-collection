@@ -1,0 +1,14 @@
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    ServerName {{ domain }}
+    DocumentRoot {{ drupal_path }}
+    <Directory "{{ drupal_path }}">
+        Options FollowSymLinks Indexes
+        AllowOverride All
+    </Directory>
+    php_admin_flag safe_mode off
+    <FilesMatch \.php$>
+        SetHandler "proxy:unix:/var/run/php/php7.3-fpm.sock|fcgi://localhost/"
+    </FilesMatch>
+
+</VirtualHost>

@@ -1,0 +1,67 @@
+# tasks file for drupal8-clone
+- name: "apache website"
+  import_tasks: apache.yml
+
+- name: add domain to /etc/hosts
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    line: 127.0.0.1 {{ domain }}
+
+- name: "Composer install"
+  become: yes
+  become_user: "{{ user}}"
+  composer:
+    command: install
+    global_command: false
+    working_dir: "{{ project_path }}"
+
+
+- name: settings.local.php from templates
+  template:
+    src: templates/settings.local.php.j2
+    dest: "{{ project_path }}/web/sites/default/settings.local.php"
+    owner: "{{ user }}"
+    group: www-data
+
+- name: system.site.yml from templates
+  template:
+    src: templates/system.site.yml.j2
+    dest: "{{ project_path }}/config/default/sync/system.site.yml"
+    owner: "{{ user }}"
+    group: www-data
+
+- name: "change core.extension.yml : profile : minimal"
+  ansible.builtin.lineinfile:
+    path: "{{ project_path }}/config/default/sync/core.extension.yml"
+    regexp: 'profile:'
+    line: 'profile: minimal'
+
+
+- name: "change core.extension.yml : remove standard:***"
+  ansible.builtin.lineinfile:
+    path: "{{ project_path }}/config/default/sync/core.extension.yml"
+    regexp: 'standard:'
+    line: ''
+
+
+- name: "Drush si"
+  become_user: "{{ user}}"
+  command: "{{ project_path }}/vendor/drush/drush/drush si --account-name={{ user_1}} --account-mail={{ user_1_mail }} --site-mail={{ user_1_mail }}  --account-pass={{ user_1_passwd }} --existing-config"
+
+- name: "change settings.local.php : allowing memcache"
+  ansible.builtin.lineinfile:
+    path: "{{ project_path }}/web/sites/default/settings.local.php"
+    regexp: 'ansible line to remove'
+    state: absent
+
+- name: Add a line to a file if the file does not exist, without passing regexp
+  ansible.builtin.lineinfile:
+    path: "{{ project_path }}/web/sites/default/services.yml"
+    line: '    install_profile: standard '
+    create: yes
+
+- name: "Drush cr"
+  become_user: "{{ user}}"
+  command: "{{ project_path }}/vendor/drush/drush/drush cr"
+
+

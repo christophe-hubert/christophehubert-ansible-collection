@@ -2,9 +2,9 @@
 # tasks file for drupal7_retrieve_prepare
 - name: Ensure file directory exists
   file:
-    path: "{{ retrieve_path }}/files"
+    path: "{{ ansible_temp }}/files"
     state: directory
 - name: Ensure db directory exists
   file:
-    path: "{{ retrieve_path }}/db"
+    path: "{{ ansible_temp }}/db"
     state: directory

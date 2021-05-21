@@ -1,0 +1,48 @@
+
+
+- name: ownership of drupal
+  file:
+    path: "{{ drupal_path }}"
+    state: directory
+    owner:  "{{ user }}"
+    group: www-data
+    recurse: yes
+
+
+- name: Delete content & directory
+  file:
+    state: absent
+    path: "{{ project_path }}/.git"
+
+
+- name: Ensure temp directory exists.
+  file:
+    path: "{{ project_path }}/tmp/default"
+    state: directory
+    owner: "{{ user }}"
+    group: www-data
+
+- name: Ensure private directory exists.
+  file:
+    path: "{{ project_path }}/drupal_private/default"
+    state: directory
+    owner: "{{ user }}"
+    group: www-data
+
+- name: Ensure file directory exists.
+  file:
+    path: "{{ drupal_path }}/sites/default/files"
+    state: directory
+    owner: "{{ user }}"
+    group: www-data
+
+
+- name: Ensure xmlsitemap directory exists.
+  file:
+    path: "{{ drupal_path }}/sites/default/files/xmlsitemap"
+    state: directory
+    owner: "{{ user }}"
+    group: www-data
+
+
+

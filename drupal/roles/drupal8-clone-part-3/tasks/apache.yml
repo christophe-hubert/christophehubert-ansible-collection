@@ -1,0 +1,16 @@
+
+- name: Add Apache virtualhost for Drupal.
+  template:
+    src: "{{ drupal_conf_path}}"
+    dest: "/etc/apache2/sites-available/{{ domain }}.conf"
+    owner: "{{ root_user }}"
+    group: "{{ root_user }}"
+    mode: 0644
+  notify: restart apache
+
+- name: Enable the Drupal site.
+  command: >
+    a2ensite {{ domain }}
+    creates=/etc/apache2/sites-enabled/{{ domain }}.conf
+  notify: restart apache
+

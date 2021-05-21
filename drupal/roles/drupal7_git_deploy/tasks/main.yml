@@ -3,32 +3,32 @@
 
 - name: Ensure git directory exists.
   file:
-    path: "{{ git_path }}"
+    path: "{{ project_path }}"
     state: directory
     owner: "{{ root_user }}"
     group: "{{ root_user }}"
 
 # check ansible.cfg in this directory [ssh_connection] ssh_args=-o ForwardAgent=yes
 # ssh-keygen -f "/home/chub/.ssh/known_hosts" -R "172.17.0.2"
-- name: Clone a private repository into {{ git_path }}.
+- name: Clone a private repository into {{ project_path }}.
   git:
     repo: git@github.com:christophe-hubert/bruxeo7.git
     version: main
-    dest: "{{ git_path }}"
+    dest: "{{ project_path }}"
     accept_hostkey: yes
   # ssh-agent doesn't allow key to pass through remote sudo commands.
   become: no
 
 - name: git directory ownership.
   file:
-    path: "{{ git_path }}"
+    path: "{{ project_path }}"
     state: directory
     owner: "{{ root_user }}"
     group: "{{ root_user }}"
     recurse: yes
 - name: ownership of drupal
   file:
-    path: "{{ drupal_core_path }}"
+    path: "{{ drupal_path }}"
     state: directory
     owner: www-data
     group: www-data

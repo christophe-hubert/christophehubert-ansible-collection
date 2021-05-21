@@ -1,0 +1,20 @@
+- name: fetch files on local
+  ansible.builtin.fetch:
+    src: "{{ distant_drupal_path_source }}/sites/default/settings.php"
+    dest: "{{ drupal_path }}/sites/default/settings.php"
+    flat: yes
+
+
+- name: fetch files on local
+  ansible.builtin.fetch:
+    src: "{{ distant_drupal_path_source }}/.htaccess"
+    dest: "{{ drupal_path }}/.htaccess"
+    flat: yes
+
+
+- name: fetch files on local
+  ansible.builtin.fetch:
+    src: "{{ distant_drupal_path_source }}/robots.txt"
+    dest: "{{ drupal_path }}/robots.txt"
+    flat: yes
+    fail_on_missing: no

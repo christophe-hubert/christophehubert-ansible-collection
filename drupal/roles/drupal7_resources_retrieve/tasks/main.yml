@@ -2,7 +2,7 @@
 # tasks file for drupal7_resources_retrieve
 - name: dump directory exists.
   file:
-    path: "{{ retrieve_path }}/db"
+    path: "{{ ansible_temp }}/db"
     state: directory
     owner: "{{ distant_source_user }}"
     group: "{{ distant_source_user }}"
@@ -13,18 +13,18 @@
     name: "{{ drupal_db_name }}"
     login_user: "{{ drupal_db_user }}"
     login_password: "{{ drupal_db_passwd }}"
-    target: "{{ retrieve_path }}/db/{{ drupal_db_name }}.gz"
+    target: "{{ ansible_temp }}/db/{{ drupal_db_name }}.gz"
 
 - name: fetch db on local
   ansible.builtin.fetch:
-    src: "{{ retrieve_path }}/db/{{ drupal_db_name }}.gz"
-    dest: "{{ retrieve_path }}/db/{{ drupal_db_name }}.gz"
+    src: "{{ ansible_temp }}/db/{{ drupal_db_name }}.gz"
+    dest: "{{ ansible_temp }}/db/{{ drupal_db_name }}.gz"
     flat: yes
 
 
 - name: dump directory exists.
   file:
-    path: "{{ retrieve_path }}/files"
+    path: "{{ ansible_temp }}/files"
     state: directory
     owner: "{{ distant_source_user }}"
     group: "{{ distant_source_user }}"
@@ -34,11 +34,11 @@
   become: yes
   archive:
     path: "{{ distant_source_drupal_core_path }}/sites/00_algol_websites/files/c02"
-    dest: "{{ retrieve_path }}/files/c02_files.gz"
+    dest: "{{ ansible_temp }}/files/c02_files.gz"
     format: gz
 
 - name: fetch files on local
   ansible.builtin.fetch:
-    src: "{{ retrieve_path }}/files/c02_files.gz"
-    dest: "{{ retrieve_path }}/files/c02_files.gz"
+    src: "{{ ansible_temp }}/files/c02_files.gz"
+    dest: "{{ ansible_temp }}/files/c02_files.gz"
     flat: yes

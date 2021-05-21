@@ -1,0 +1,31 @@
+# the templates/settings.local.php.j2 is used now
+
+- name: "change setting : memcache key_prefix"
+  ansible.builtin.lineinfile:
+    path: "{{ drupal_path }}/sites/default/settings.local.php"
+    regexp: 'settings.*memcache.*key_prefix'
+    line: $settings['memcache']['key_prefix'] = '{{ memcache_key_prefix }}';
+
+- name: "change setting : DATABASE NAME"
+  ansible.builtin.replace:
+    path: "{{ drupal_path }}/sites/default/settings.local.php"
+    regexp: "'database' => '(.+)'"
+    replace: "'database' => '{{ drupal_db_name }}'"
+
+- name: "change setting : DATABASE USER"
+  ansible.builtin.replace:
+    path: "{{ drupal_path }}/sites/default/settings.local.php"
+    regexp: "'username' => '(.+)'"
+    replace: "'username' => '{{ drupal_db_user }}'"
+
+
+- name: "change setting : DATABASE PASSWD"
+  ansible.builtin.replace:
+    path: "{{ drupal_path }}/sites/default/settings.local.php"
+    regexp: "'password' => '(.+)'"
+    replace: "'password' => '{{ drupal_db_passwd }}'"
+
+
+- name: "Drush change uuid site : OBSOLETE???"
+  become_user: "{{ user}}"
+  command: '{{ project_path }}/vendor/drush/drush/drush  cset system.site uuid "{{ drupal_site_uuid }}"'
