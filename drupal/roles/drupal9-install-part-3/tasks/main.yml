@@ -1,0 +1,60 @@
+# tasks file for drupal8-clone
+- name: "apache website"
+  import_tasks: apache.yml
+
+- name: add domain to /etc/hosts
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    line: 127.0.0.1 {{ domain }}
+
+
+- name: "composer vers 1"
+  become_user: "{{ user}}"
+  command: "sudo composer self-update --1"
+
+- name: "php7.2"
+  become_user: "{{ user}}"
+  command: "sudo update-alternatives --set php /usr/bin/php7.2"
+- name: "php7.2"
+  become_user: "{{ user}}"
+  command: "sudo update-alternatives --set phar /usr/bin/phar7.2"
+- name: "php7.2"
+  become_user: "{{ user}}"
+  command: "sudo update-alternatives --set phar.phar /usr/bin/phar.phar7.2"
+- name: "php7.2"
+  become_user: "{{ user}}"
+  command: "sudo update-alternatives --set phpize /usr/bin/phpize7.2"
+- name: "php7.2"
+  become_user: "{{ user}}"
+  command: "sudo update-alternatives --set php-config /usr/bin/php-config7.2"
+
+
+- name: "Composer install"
+  become: yes
+  become_user: "{{ user}}"
+  composer:
+    command: install
+    global_command: false
+    working_dir: "{{ project_path }}"
+
+- name: fetch files on local
+  ansible.builtin.fetch:
+    src: "{{ settings_filepath }}"
+    dest: "{{ drupal_path }}/sites/default/settings.php"
+    flat: yes
+
+
+
+- name: Restore database
+  community.mysql.mysql_db:
+    name: "{{ drupal_db_name }}"
+    state: import
+    target: "{{ db_filepath }}"
+
+
+
+- name: "Drush cr"
+  become_user: "{{ user}}"
+  command: "{{ project_path }}/vendor/drush/drush/drush cr"
+
+

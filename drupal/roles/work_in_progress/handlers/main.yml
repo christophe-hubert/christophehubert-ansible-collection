@@ -1,0 +1,4 @@
+---
+# handlers file for ubuntu20_prepare_for_drupal7
+- name: restart apache
+  service: name=apache2 state=restarted

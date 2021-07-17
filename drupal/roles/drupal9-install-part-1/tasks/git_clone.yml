@@ -1,0 +1,47 @@
+# tasks file for drupal8-clone
+- name: Ensure git directory exists.
+  file:
+    path: "{{ project_path }}"
+    state: directory
+    owner: "{{ user }}"
+    group: "{{ user }}"
+
+
+
+
+- name: Delete content & directory
+  file:
+    state: absent
+    path: "{{ ansible_temp }}/clone_temp"
+
+
+
+- name: Ensure temp directory exists.
+  file:
+    path: "{{ ansible_temp }}/clone_temp"
+    state: directory
+    owner: "{{ user }}"
+    group: "{{ user }}"
+
+
+- name: Clone a private repository into {{ project_path }}/temp_git.
+  # ssh-agent doesn't allow key to pass through remote sudo commands.
+  become: no
+  git:
+    repo: "{{ git_repo_source }}"
+    version: "{{ git_repo_version }}"
+    dest: "{{ ansible_temp }}/clone_temp"
+    key_file: "{{ ssh_key_path }}"
+    accept_hostkey: yes
+    force: yes
+
+
+- name: cp clone_temp to project_path
+  command: rsync  -av "{{ ansible_temp }}/clone_temp/"  "{{ project_path }}"
+
+- name: Delete content & directory
+  file:
+    state: absent
+    path: "{{ ansible_temp }}/clone_temp"
+
+

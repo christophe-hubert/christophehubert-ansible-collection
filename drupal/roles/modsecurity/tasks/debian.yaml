@@ -1,0 +1,24 @@
+---
+    - name: Install apache debian prerequisite packages
+      apt: pkg={{ item }} state=installed update_cache=yes
+      with_items:
+        - libtool
+        - automake
+        - autoconf
+        - apache2-dev
+        - libpcre3-dev
+        - libxml2-dev
+        - libyajl-dev
+        - ssdeep
+        - liblua5.2-dev
+        - libcurl4-openssl-dev
+
+    - name: Installs apache web server
+      apt: pkg=apache2 update_cache=yes state=latest
+
+    - name: Installs apache2 http modules
+      apache2_module: name={{ item }} state=present
+      with_items:
+        - unique_id
+        - headers
+        - ssl

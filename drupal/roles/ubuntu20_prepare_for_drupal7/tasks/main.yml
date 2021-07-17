@@ -1,0 +1,158 @@
+# tasks file for ubuntu20_prepare_for_drupal7
+
+
+- name: Update apt-get repo and cache
+  apt:
+    update_cache: yes
+    force_apt_get: yes
+    cache_valid_time: 3600
+
+- name: Get software for apt repository management.
+  apt:
+    state: present
+    name:
+      - python3-apt
+      - python3-pycurl
+
+- name: Add ondrej repository for later versions of PHP.
+  apt_repository:
+    repo: 'ppa:ondrej/php'
+    update_cache: yes
+
+- name: "Install Apache, MySQL, PHP, and other dependencies."
+  apt:
+    state: present
+    name:
+      - acl
+      - git
+      - curl
+      - unzip
+      - sendmail
+      - apache2
+      - php7.4-common
+      - php7.4-cli
+      - php7.4-dev
+      - php7.4-gd
+      - php7.4-curl
+      - php7.4-json
+      - php7.4-opcache
+      - php7.4-xml
+      - php7.4-mbstring
+      - php7.4-pdo
+      - php7.4-mysql
+      - php7.4-fpm
+      - php5.6-common
+      - php5.6-cli
+      - php5.6-dev
+      - php5.6-gd
+      - php5.6-curl
+      - php5.6-json
+      - php5.6-opcache
+      - php5.6-xml
+      - php5.6-mbstring
+      - php5.6-pdo
+      - php5.6-mysql
+      - php5.6-fpm
+      - libapache2-mod-php5.6
+      - php5.6-memcached
+      - libapache2-mod-php5.6
+      - php-pear
+      - libapache2-mod-php7.4
+      - php7.4-memcached
+      - php7.4-bcmath
+      - php5.6-bcmath
+      - php-apcu
+      - libpcre3-dev
+      - libapache2-mod-php7.4
+      - python3-mysqldb
+      - mysql-server
+      - ufw
+      - net-tools
+      - memcached
+      - libmemcached-tools
+
+
+- name: Ensure the memcahced service is running
+  service:
+    name: memcached
+    state: started
+
+- name: sTART the firewall (since this is for local dev only).
+  service:
+    name: ufw
+    state: started
+
+- name: Start Apache, MySQL, and PHP.
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  with_items:
+    - apache2
+
+# chub hack to start mysql
+- name: start mysql
+  command: " /etc/init.d/mysql start"
+
+
+
+- name: Enable Apache rewrite module (required for Drupal).
+  apache2_module:
+    name: rewrite
+    state: present
+  notify: restart apache
+
+- name: Adjust OpCache memory setting.
+  lineinfile:
+    path: /etc/php/7.4/apache2/conf.d/10-opcache.ini
+    regexp: '^opcache.memory_consumption'
+    line: opcache.memory_consumption = 96
+    state: present
+  notify: restart apache
+
+
+- name: pour autoriser le cron seulement au root
+  template:
+    src: templates/cron.allow.j2
+    dest: /etc/cron.allow
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart apache
+
+
+- name: ufw
+  ufw:
+    state: enabled
+
+- name: ufw2
+  ufw:
+    policy: allow
+    direction: outgoing
+
+- name: ufw
+  ufw:
+    policy: deny
+    direction: incoming
+
+- name: ufw
+  ufw:
+    rule: allow
+    port: 51240
+    proto: tcp
+
+
+- name: ufw
+  ufw:
+    rule: allow
+    port: 80
+    proto: tcp
+
+- name: ufw
+  ufw:
+    rule: allow
+    port: 443
+    proto: tcp
+
+
+

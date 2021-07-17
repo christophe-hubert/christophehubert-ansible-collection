@@ -1,0 +1,5 @@
+---
+# vars file for drupal8-clone
+post_install: |
+  Things left to do:
+    - edit {{ drupal_path }}/sites/default/settings.php

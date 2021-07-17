@@ -1,0 +1,13 @@
+---
+# tasks file for work_in_progress
+
+- name: send ufw init commands
+  template:
+    src: templates/ufw.bash.j2
+    dest: "{{ ufw_file }}"
+    owner: root
+    group: root
+
+
+- name: setting ufw
+  ansible.builtin.command: cat {{ ufw_file|quote }}

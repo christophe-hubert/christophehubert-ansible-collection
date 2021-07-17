@@ -1,0 +1,14 @@
+
+
+- name: Create a MySQL database for Drupal.
+  mysql_db:
+    config_file: /root/.my.cnf
+    name: "{{ drupal_db_name }}"
+    state: present
+- name: Create a MySQL user for Drupal.
+  mysql_user:
+    name: "{{ drupal_db_user }}"
+    password: "{{ drupal_db_passwd }}"
+    priv: "{{ drupal_db_name }}.*:ALL"
+    host: localhost
+    state: present

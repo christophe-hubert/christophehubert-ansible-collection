@@ -1,0 +1,2 @@
+# vars file for drupal8-clone
+drupal_conf_path: "templates/drupal.conf.j2"

@@ -1,0 +1,6 @@
+- name: fetch files on local
+  ansible.builtin.fetch:
+    src: "{{ settings_filepath }}"
+    dest: "{{ drupal_path }}/sites/default/settings.php"
+    flat: yes
+

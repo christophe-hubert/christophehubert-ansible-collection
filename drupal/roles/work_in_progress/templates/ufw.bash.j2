@@ -1,0 +1,21 @@
+ufw allow ssh
+ufw allow 51240
+ufw status verbose
+ufw  allow 'Apache Full'
+
+ufw  allow udp
+ufw allow out to any port 53
+#ufw allow Bind9
+#ufw allow 25
+ufw allow out 25
+#ufw allow 10000
+#ufw allow 21
+#ufw allow 20
+#ufw allow 21/tcp
+#ufw allow 20/tcp
+ufw allow 40000:40010/tcp
+
+#ufw allow ftp
+#ufw allow from any to any port 10000 proto tcp
+ufw deny 31228 # kinsing
+ufw  --force  enable
