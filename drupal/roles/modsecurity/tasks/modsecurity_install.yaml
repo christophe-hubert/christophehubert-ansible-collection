@@ -1,0 +1,67 @@
+- include: debian.yaml
+  when: ansible_os_family == 'Debian'
+- include: redhat.yaml
+  when: ansible_os_family == 'RedHat'
+# Try and install YAJL (which is sometimes in yum)
+# TODO
+- name: Create scratch directory
+  file: path="{{ ScratchLocation }}"  state=directory
+# Check if ssdeep is installed
+- name: Check if ssdeep is installed
+  find: paths="/usr/bin,/usr/local,/usr/sbin" patterns=ssdeep recurse=yes
+  register: ssdeepInfo
+# If it's not installed we need to donwload and install it
+- name: Download ssdeep
+  get_url: url=http://downloads.sourceforge.net/project/ssdeep/ssdeep-2.13/ssdeep-2.13.tar.gz?r=&ts=1470792298&use_mirror=superb-sea2 dest="{{ ScratchLocation }}/ssdeep.tar.gz"
+  when: ssdeepInfo["matched"] == 0
+- name: Unpack ssdeep
+  unarchive: src="{{ ScratchLocation }}/ssdeep.tar.gz" dest="{{ ScratchLocation }}"
+  when: ssdeepInfo["matched"] == 0
+- name: configure ssdeep
+  command: ./configure chdir="{{ ScratchLocation }}/ssdeep-2.13"
+  when: ssdeepInfo["matched"] == 0
+- name: Run ./make
+  command: make install chdir="{{ ScratchLocation }}/ssdeep-2.13"
+  when: ssdeepInfo["matched"] == 0
+- include: modsecSetup.yaml
+- include: getEnv.yaml
+# Install modsecurity.conf and unicode.map
+- name: Create modsecurity.d directory
+  file: path="{{ HttpServerRoot }}/modsecurity.d" state=directory
+- name: Check if we have loaded the module
+  lineinfile:
+    dest="{{ HttpConfPath }}"
+    line="LoadModule security2_module {{ ModSecModulePath }}"
+    regexp="^\s*?LoadModule\ssecurity2_module\s.*?.so$"
+    state=present
+    insertafter=EOF
+- name: Check if we have loaded the unique_id module
+  lineinfile:
+    dest="{{ HttpConfPath }}"
+    line="LoadModule unique_id_module {{ ModSecModulePath | dirname }}/mod_unique_id.so"
+    regexp="^\s*?LoadModule\sunique_id_module\s.*?.so$"
+    state=present
+    insertafter=EOF
+- name: Check if we have added our include
+  lineinfile:
+    dest="{{ HttpConfPath }}"
+    line="IncludeOptional modsecurity.d/*.conf"
+    regexp="^IncludeOptional modsecurity\.d\/\*\.conf$"
+    state=present
+    insertafter=EOF
+- name: Copy modsecurity.conf from git
+  copy: src="{{ ScratchLocation }}/ModSecurity/modsecurity.conf-recommended" dest="{{ HttpServerRoot }}/modsecurity.d/modsecurity.conf" remote_src=true
+- name: Copy unicode.mapping from git
+  copy: src="{{ ScratchLocation }}/ModSecurity/unicode.mapping" dest="{{ HttpServerRoot }}/modsecurity.d/unicode.mapping" remote_src=true
+# Remove the scratch
+- name: get scratch stat info
+  stat: path="{{ ScratchLocation }}"
+  register: scratchStat
+- name: Delete Scartch
+  file: path="{{ ScratchLocation }}" state=absent
+  when: scratchStat.stat.isdir is defined and scratchStat.stat.isdir == true
+- name: SecRuleEngine On
+  ansible.builtin.replace:
+    path: "{{ HttpServerRoot }}/modsecurity.d/modsecurity.conf"
+    regexp: "SecRuleEngine DetectionOnly"
+    replace: "SecRuleEngine On"

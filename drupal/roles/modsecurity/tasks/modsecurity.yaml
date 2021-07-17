@@ -81,7 +81,7 @@
   hosts: localhost
   become: True
   vars:
-    crs_version: v3.0/master
+    crs_version: v2.2/master
   tasks:
   - include: getEnv.yaml
   - name: Check if we have loaded the module

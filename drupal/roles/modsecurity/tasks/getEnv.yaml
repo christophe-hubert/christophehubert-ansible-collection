@@ -16,6 +16,8 @@
        HttpConfPath: "{{ HttpConfPath[\"files\"][0][\"path\"] }}"
        foundData: True
     when: ModSecModulePath["matched"] == 1 and HttpConfPath["matched"] == 1
+  - debug: msg="{{ ModSecModulePath }}"
+  - debug: msg="{{ HttpConfPath }}"
   - name: Check to make sure we have data
     fail: msg="We were unable to locate the httpd conf path or ModSec module path"
     when: foundData is not defined or foundData != 1

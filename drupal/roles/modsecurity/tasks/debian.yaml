@@ -1,6 +1,6 @@
 ---
     - name: Install apache debian prerequisite packages
-      apt: pkg={{ item }} state=installed update_cache=yes
+      apt: pkg={{ item }} state=present update_cache=yes
       with_items:
         - libtool
         - automake

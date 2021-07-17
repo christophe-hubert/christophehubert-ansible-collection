@@ -1,6 +1,2 @@
 ---
 # vars file for modsecurity
-ScratchLocation: /tmp/modsecurity
-HttpServerRoot: /etc/apache2
-HttpConfPath: /etc/apache2/apache2.conf
-ModSecModulePath: modules/mod_security2.so

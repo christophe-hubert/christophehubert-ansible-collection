@@ -1,2 +1,4 @@
 ---
-# handlers file for modsecurity
+# handlers file for drupal8-clone
+- name: restart apache
+  service: name=apache2 state=restarted

@@ -1,0 +1,29 @@
+- include: getEnv.yaml
+- name: delete mod_security2.so
+  debug: var=ModSecModulePath
+- name: Check if we have our modsecurity_2.so
+  stat: path="{{ ModSecModulePath }}"
+  register: modsecStat
+- name: Delete includeOWASP.conf
+  file: path="{{ ModSecModulePath }}" state=absent
+  when: modsecStat.stat.exists
+# Remove the modsecurity.d folder
+- name: Check if our modsecurity.d is there
+  stat: path="{{ HttpServerRoot }}/modsecurity.d"
+  register: modsecFolderStat
+- name: Delete modsecurity.d
+  file: path="{{ HttpServerRoot }}/modsecurity.d" state=absent
+  when: modsecFolderStat.stat.isdir is defined and modsecFolderStat.stat.isdir == true
+# Update our httpd.conf
+- name: remove the LoadModule if it is there
+  lineinfile:
+    dest="{{ HttpConfPath }}"
+    line=""
+    regexp="^\s*?LoadModule\ssecurity2_module\s.*?.so$"
+    state=present
+- name: Remove the include modsecurity.d if there
+  lineinfile:
+    dest="{{ HttpConfPath }}"
+    line=""
+    regexp="^IncludeOptional modsecurity\.d\/\*\.conf$"
+    state=present

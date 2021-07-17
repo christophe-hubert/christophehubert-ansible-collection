@@ -3,7 +3,7 @@
     - name: Clone ModSec Repo
       git: repo=git://github.com/SpiderLabs/ModSecurity/
            dest="{{ ScratchLocation }}/ModSecurity"
-           version=HEAD
+           version=v2/master
            update=no
     # Install ModSecurity
     - name: Check if configure already exists

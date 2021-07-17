@@ -1,0 +1,13 @@
+- include: getEnv.yaml
+- name: Check if we have our includeOWASP.conf
+  stat: path="{{ HttpServerRoot }}/modsecurity.d/includeOWASP.conf"
+  register: includeStat
+- name: Delete includeOWASP.conf
+  file: path="{{ HttpServerRoot }}/modsecurity.d/includeOWASP.conf" state=absent
+  when: includeStat.stat.exists
+- name: Check if our crs git is there
+  stat: path="{{ HttpServerRoot }}/modsecurity.d/owasp-crs/"
+  register: crsStat
+- name: Delete CRS
+  file: path="{{ HttpServerRoot }}/modsecurity.d/owasp-crs/" state=absent
+  when: crsStat.stat.isdir is defined and crsStat.stat.isdir == true

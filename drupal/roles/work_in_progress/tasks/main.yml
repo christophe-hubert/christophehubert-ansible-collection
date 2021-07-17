@@ -1,5 +1,2 @@
 ---
 # tasks file for work_in_progress
-- name: modsecurity
-  import_role:
-    name: modsecurity

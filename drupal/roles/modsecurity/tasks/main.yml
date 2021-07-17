@@ -1,2 +1,21 @@
-- name: "apache website"
-  import_tasks: modsecurity.yaml
+
+- name: ModSecurity Install
+  import_tasks: modsecurity_install.yaml
+  notify: restart apache
+  vars:
+    ScratchLocation: /opt/ansibleScratch
+
+
+- name: OWASP CRS Install
+  vars:
+    crs_version: v2.2/master
+  import_tasks: crs_install.yaml
+  notify: restart apache
+  # notify does'nt seems to work.
+
+
+- name: "restart apache"
+  command: "/etc/init.d/apache2 restart"
+
+
+
